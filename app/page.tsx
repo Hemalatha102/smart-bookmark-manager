@@ -61,19 +61,33 @@ export default function BookmarkApp() {
       supabase.removeChannel(channel)
     }
   }, [])
-
-  // 4. UI for Logged Out User
+// 4. UI for Logged Out User
   if (!user) {
+    const handleMagicLink = async () => {
+      const email = window.prompt("Enter your email:");
+      if (email) {
+        const { error } = await supabase.auth.signInWithOtp({ 
+          email,
+          options: { emailRedirectTo: window.location.origin }
+        });
+        if (error) alert(error.message);
+        else alert("Check your email for the login link!");
+      }
+    };
+
     return (
       <div className="flex flex-col items-center justify-center min-h-screen bg-gray-900 text-white p-4">
         <h1 className="text-3xl font-bold mb-6">Smart Bookmark Manager</h1>
         <button 
-          onClick={() => supabase.auth.signInWithOAuth({ provider: 'google' })}
-          className="bg-blue-600 px-6 py-3 rounded-lg font-bold shadow-lg hover:bg-blue-700 transition"
+          onClick={handleMagicLink}
+          className="bg-green-600 px-6 py-3 rounded-lg font-bold shadow-lg hover:bg-green-700 transition"
         >
-          Login with Google
+          Login with Email Link
         </button>
       </div>
+    );
+  }
+  
     )
   }
 
