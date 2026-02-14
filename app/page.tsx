@@ -11,12 +11,14 @@ export default function BookmarkApp() {
   const [title, setTitle] = useState('');
   const [user, setUser] = useState<any>(null);
 
-  // 2. Define the fetcher correctly
-  async function fetchBookmarks() {
-    const { data } = await supabase.from('bookmarks').select('*').order('id', { ascending: false });
-    setBookmarks(data || []);
+async function fetchBookmarks() {
+    const { data } = await supabase
+      .from('bookmarks')
+      .select('*')
+      .order('id', { ascending: false })
+    setBookmarks(data || [])
   }
-
+  
   useEffect(() => {
     const checkUser = async () => {
       const { data: { session } } = await supabase.auth.getSession();
