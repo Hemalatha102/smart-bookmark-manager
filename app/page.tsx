@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react'
 import { createClient } from '@supabase/supabase-js'
 
 const supabaseUrl = 'https://pksaozhutulcwflykhrq.supabase.co'
-const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBrc2Fvemh1dHVsY3dmbHlraHJxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzEwMTI5NDUsImV4cCI6MjA4NjU4ODk0NX0.BpIb09m13oSqFmbAxS6uIKpjH85sm_1Bn1L9aED4Nn4' // Keep your existing key here
+const supabaseKey = 'YOUR_ANON_KEY_HERE' // Keep your existing key here
 const supabase = createClient(supabaseUrl, supabaseKey)
 
 export default function BookmarkApp() {
