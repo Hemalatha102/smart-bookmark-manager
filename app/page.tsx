@@ -1,8 +1,8 @@
 'use client'
 import { useState, useEffect } from 'react'
 import { createClient } from '@supabase/supabase-js'
-const supabaseUrl = https://mcxnezfrnkgmsrjnirdi.supabase.co
-const supabaseKey = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1jeG5lemZybmtnbXNyam5pcmRpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzA5NjE2NjIsImV4cCI6MjA4NjUzNzY2Mn0.gIkBwYY-fxj07nVFYK_UaaYo-hs3gf7oKegWTXcnHC0
+const supabaseUrl = 'https://mcxnezfrnkgmsrjnirdi.supabase.co'
+const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1jeG5lemZybmtnbXNyam5pcmRpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzA5NjE2NjIsImV4cCI6MjA4NjUzNzY2Mn0.gIkBwYY-fxj07nVFYK_UaaYo-hs3gf7oKegWTXcnHC0'
 const supabase = createClient(supabaseUrl, supabaseKey)
 
 export default function BookmarkApp() {
