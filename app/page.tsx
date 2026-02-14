@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react'
 import { createClient } from '@supabase/supabase-js'
 
 // 1. Supabase Setup
-const supabaseUrl = 'https://mcxnezfrnkgmsrjnrirdi.supabase.co'
+const supabaseUrl = 'https://xnezfrnkgmsrjnrirdi.supabase.co'
 const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1jeG5lemZybmtnbXNyam5pcmRpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzk1MjE2MjgsImV4cCI6MjA1NTA5NzYyOH0.v-9M4G8Xy-X3H1_V7G_7G_7G_7G'
 const supabase = createClient(supabaseUrl, supabaseKey)
 
