@@ -1,12 +1,21 @@
 'use client'
 import { useState, useEffect } from 'react'
-import { supabase } from '@/supabase/supabase'
+import { createClient } from '@supabase/supabase-js'
+const supabaseUrl = https://mcxnezfrnkgmsrjnirdi.supabase.co
+const supabaseKey = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1jeG5lemZybmtnbXNyam5pcmRpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzA5NjE2NjIsImV4cCI6MjA4NjUzNzY2Mn0.gIkBwYY-fxj07nVFYK_UaaYo-hs3gf7oKegWTXcnHC0
+const supabase = createClient(supabaseUrl, supabaseKey)
 
 export default function BookmarkApp() {
   const [bookmarks, setBookmarks] = useState<any[]>([]);
   const [url, setUrl] = useState('');
   const [title, setTitle] = useState('');
   const [user, setUser] = useState<any>(null);
+
+  // 2. Define the fetcher correctly
+  async function fetchBookmarks() {
+    const { data } = await supabase.from('bookmarks').select('*').order('id', { ascending: false });
+    setBookmarks(data || []);
+  }
 
   useEffect(() => {
     const checkUser = async () => {
@@ -16,10 +25,12 @@ export default function BookmarkApp() {
     };
     checkUser();
 
-    const channel = supabase.channel('realtime_changes')
+    const channel = supabase
+      .channel('realtime_changes')
       .on('postgres_changes', { event: '*', schema: 'public', table: 'bookmarks' }, () => {
         fetchBookmarks();
-      }).subscribe();
+      })
+      .subscribe();
 
     return () => { supabase.removeChannel(channel); };
   }, []);
