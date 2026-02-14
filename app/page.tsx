@@ -37,12 +37,7 @@ async function fetchBookmarks() {
     return () => { supabase.removeChannel(channel); };
   }, []);
 
-  async function fetchBookmarks() {
-    const { data } = await supabase.from('bookmarks').select('*').order('id', { ascending: false });
-    setBookmarks(data || []);
-  }
-
-  const addBookmark = async (e: any) => {
+   const addBookmark = async (e: any) => {
     e.preventDefault();
     if (!user) return alert("Please login first");
     await supabase.from('bookmarks').insert([{ url, title, user_id: user.id }]);
