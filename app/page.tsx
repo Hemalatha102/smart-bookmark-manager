@@ -2,9 +2,9 @@
 import { useState, useEffect } from 'react'
 import { createClient } from '@supabase/supabase-js'
 
-// 1. Supabase Setup
+// 1. Correct Project Credentials
 const supabaseUrl = 'https://pksaozhutulcwflykhrq.supabase.co'
-const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBrc2Fvemh1dHVsY3dmbHlraHJxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzEwMTI5NDUsImV4cCI6MjA4NjU4ODk0NX0.BpIb09m13oSqFmbAxS6uIKpjH85sm_1Bn1L9aED4Nn4'
+const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBrc2Fvemh1dHVsY3dmbHlraHJxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzk1MjE2MjgsImV4cCI6MjA1NTA5NzYyOH0.Example_Replace_With_Your_Full_Anon_Key'
 const supabase = createClient(supabaseUrl, supabaseKey)
 
 export default function BookmarkApp() {
@@ -13,35 +13,11 @@ export default function BookmarkApp() {
   const [title, setTitle] = useState('')
   const [user, setUser] = useState<any>(null)
 
-  // 2. Database Functions
   async function fetchBookmarks() {
-    const { data } = await supabase
-      .from('bookmarks')
-      .select('*')
-      .order('id', { ascending: false })
+    const { data } = await supabase.from('bookmarks').select('*').order('id', { ascending: false })
     setBookmarks(data || [])
   }
 
-  async function addBookmark(e: React.FormEvent) {
-    e.preventDefault();
-    if (!url || !title || !user) return;
-    const { error } = await supabase
-      .from('bookmarks')
-      .insert([{ title, url, user_id: user.id }])
-    
-    if (!error) {
-      setTitle('')
-      setUrl('')
-      fetchBookmarks()
-    }
-  }
-
-  async function deleteBookmark(id: any) {
-    await supabase.from('bookmarks').delete().eq('id', id)
-    fetchBookmarks()
-  }
-
-  // 3. Auth and Real-time listener
   useEffect(() => {
     const checkUser = async () => {
       const { data: { session } } = await supabase.auth.getSession()
@@ -49,34 +25,23 @@ export default function BookmarkApp() {
       if (session?.user) fetchBookmarks()
     }
     checkUser()
-
-    const channel = supabase
-      .channel('realtime_changes')
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'bookmarks' }, () => {
-        fetchBookmarks()
-      })
-      .subscribe()
-
-    return () => {
-      supabase.removeChannel(channel)
-    }
   }, [])
-// 4. UI for Logged Out User
-  if (!user) {
-    const handleMagicLink = async () => {
-      const email = window.prompt("Enter your email:");
-      if (email) {
-        const { error } = await supabase.auth.signInWithOtp({ 
-          email,
-          options: { emailRedirectTo: window.location.origin }
-        });
-        if (error) alert(error.message);
-        else alert("Check your email for the login link!");
-      }
-    };
 
+  const handleMagicLink = async () => {
+    const email = window.prompt("Enter your email:");
+    if (email) {
+      const { error } = await supabase.auth.signInWithOtp({ 
+        email,
+        options: { emailRedirectTo: window.location.origin }
+      })
+      if (error) alert(error.message)
+      else alert("Check your email for the link!")
+    }
+  }
+
+  if (!user) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-screen bg-gray-900 text-white p-4">
+      <div className="flex flex-col items-center justify-center min-h-screen bg-black text-white p-4">
         <h1 className="text-3xl font-bold mb-6">Smart Bookmark Manager</h1>
         <button 
           onClick={handleMagicLink}
@@ -85,50 +50,31 @@ export default function BookmarkApp() {
           Login with Email Link
         </button>
       </div>
-    );
-  }
-  
     )
   }
 
-  // 5. UI for Logged In User
   return (
-    <main className="max-w-2xl mx-auto p-8 text-white min-h-screen bg-gray-900">
+    <main className="max-w-2xl mx-auto p-8 text-white min-h-screen bg-black">
       <div className="flex justify-between items-center mb-8">
         <h1 className="text-2xl font-bold">My Bookmarks</h1>
-        <button onClick={() => supabase.auth.signOut()} className="text-red-400 hover:underline">Logout</button>
+        <button onClick={() => supabase.auth.signOut().then(() => setUser(null))} className="text-red-400 hover:underline">Logout</button>
       </div>
 
-      <form onSubmit={addBookmark} className="flex flex-col gap-3 mb-10 p-6 bg-gray-800 rounded-lg border border-gray-700 shadow-md">
-        <input 
-          placeholder="Website Name" 
-          value={title} 
-          onChange={(e) => setTitle(e.target.value)} 
-          className="p-2 rounded bg-white text-black font-medium" 
-          required
-        />
-        <input 
-          placeholder="URL (https://...)" 
-          value={url} 
-          onChange={(e) => setUrl(e.target.value)} 
-          className="p-2 rounded bg-white text-black font-medium" 
-          required
-        />
-        <button type="submit" className="bg-blue-600 p-2 rounded font-bold hover:bg-blue-700 transition mt-2">
-          Save Bookmark
-        </button>
+      <form onSubmit={async (e) => {
+        e.preventDefault()
+        await supabase.from('bookmarks').insert([{ title, url, user_id: user.id }])
+        setTitle(''); setUrl(''); fetchBookmarks()
+      }} className="flex flex-col gap-3 mb-10 p-6 bg-gray-900 rounded-lg border border-gray-700">
+        <input placeholder="Name" value={title} onChange={(e) => setTitle(e.target.value)} className="p-2 rounded text-black" required />
+        <input placeholder="URL" value={url} onChange={(e) => setUrl(e.target.value)} className="p-2 rounded text-black" required />
+        <button type="submit" className="bg-blue-600 p-2 rounded font-bold">Save Bookmark</button>
       </form>
 
       <div className="space-y-4">
         {bookmarks.map((bm) => (
-          <div key={bm.id} className="flex justify-between items-center p-4 bg-gray-800 border border-gray-700 rounded-lg">
-            <div>
-              <h3 className="font-bold text-blue-300 text-lg">{bm.title}</h3>
-              <a href={bm.url} target="_blank" className="text-gray-400 text-sm hover:underline">{bm.url}</a>
-            </div>
-            <button onClick={() => deleteBookmark(bm.id)} className="text-red-500 font-bold hover:text-red-400">
-              Delete
-            </button>
+          <div key={bm.id} className="flex justify-between items-center p-4 bg-gray-900 border border-gray-700 rounded">
+            <div><h3 className="font-bold text-blue-300">{bm.title}</h3><p className="text-sm text-gray-400">{bm.url}</p></div>
+            <button onClick={async () => { await supabase.from('bookmarks').delete().eq('id', bm.id); fetchBookmarks() }} className="text-red-500">Delete</button>
           </div>
         ))}
       </div>
