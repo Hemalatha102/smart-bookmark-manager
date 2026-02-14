@@ -47,13 +47,15 @@ export default function BookmarkApp() {
     if (email) {
       const { error } = await supabase.auth.signInWithOtp({ 
         email,
-        options: { emailRedirectTo: window.location.origin }
+        options: { 
+          // UPDATE THIS LINE: Replace window.location.origin with your Vercel URL
+          emailRedirectTo: 'https://smart-bookmark-manager-delta.vercel.app' 
+        }
       })
       if (error) alert(error.message)
-      else alert("Check your email for the login link!")
+      else alert("Check your email for the NEW login link!")
     }
   }
-
   // 5. UI for Logged Out User
   if (!user) {
     return (
